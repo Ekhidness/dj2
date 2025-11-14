@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design.pro - Главная</title>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <a href="/">Главная</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'design_app:profile' %}">Личный кабинет</a>
+                <a href="{% url 'design_app:logout' %}">Выход ({{ user.fio }})</a>
+            {% else %}
+                <a href="{% url 'design_app:login' %}">Вход</a>
+                <a href="{% url 'design_app:register' %}">Регистрация</a>
+            {% endif %}
+        </nav>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <h1>Design.pro - Студия дизайна интерьеров</h1>
+
+        <div class="stats">
+            <h3>Заявок в работе: {{ in_progress_count }}</h3>
+        </div>
+
+        <div class="completed-requests">
+            <h2>Последние выполненные работы</h2>
+            {% if completed_requests %}
+                {% for request in completed_requests %}
+                <div class="request-card">
+                    <h3>{{ request.title }}</h3>
+                    <p><strong>Категория:</strong> {{ request.category.name }}</p>
+                    <p><strong>Дата выполнения:</strong> {{ request.created_at|date:"d.m.Y H:i" }}</p>
+                    {% if request.design_image %}
+                        <img src="{{ request.design_image.url }}" alt="{{ request.title }}" width="300" style="border-radius: 4px;">
+                    {% else %}
+                        <p>Изображение дизайна отсутствует</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-data">
+                    <p>Пока нет выполненных работ</p>
+                    <p>Наши дизайнеры готовы воплотить ваши идеи в жизнь!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

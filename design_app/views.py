@@ -7,7 +7,7 @@ from .models import DesignRequest, DesignCategory
 from .forms import CustomUserCreationForm, LoginForm, DesignRequestForm
 
 
-def home(request):
+def index(request):
     """Главная страница"""
     completed_requests = DesignRequest.objects.filter(
         status='completed'
@@ -21,7 +21,7 @@ def home(request):
         'completed_requests': completed_requests,
         'in_progress_count': in_progress_count,
     }
-    return render(request, 'design_app/home.html', context)
+    return render(request, 'design_app/index.html', context)
 
 
 def register_view(request):
@@ -64,7 +64,7 @@ def logout_view(request):
     """Выход из системы"""
     logout(request)
     messages.success(request, 'Вы успешно вышли из системы')
-    return redirect('design_app:home')
+    return redirect('design_app:index')
 
 
 @login_required
