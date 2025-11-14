@@ -3,28 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Design.pro - Студия дизайна</title>
+    <title>{% block title %}Design.pro - Студия дизайна{% endblock %}</title>
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
 </head>
-<body>
-    <nav class="navbar">
-        <a href="{% url 'design_app:index' %}">Главная</a>
-        {% if user.is_authenticated %}
-            <a href="{% url 'design_app:profile' %}">Личный кабинет</a>
-            <a href="{% url 'design_app:logout' %}">Выход ({{ user.fio }})</a>
-        {% else %}
-            <a href="{% url 'design_app:login' %}">Вход</a>
-            <a href="{% url 'design_app:register' %}">Регистрация</a>
-        {% endif %}
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'design_app:index' %}">Design.pro</a>
+
+            <div class="navbar-nav">
+                <a class="nav-link" href="{% url 'design_app:index' %}">Главная</a>
+                {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'design_app:profile' %}">Личный кабинет</a>
+                    <a class="nav-link" href="{% url 'design_app:logout' %}">Выход ({{ user.fio }})</a>
+                {% else %}
+                    <a class="nav-link" href="{% url 'design_app:login' %}">Вход</a>
+                    <a class="nav-link" href="{% url 'design_app:register' %}">Регистрация</a>
+                {% endif %}
+            </div>
+        </div>
     </nav>
 
-    <div class="container">
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+    <div class="container mt-4">
+        {% bootstrap_messages %}
 
         {% block content %}
         {% endblock %}

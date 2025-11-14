@@ -1,23 +1,28 @@
 {% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Вход - Design.pro{% endblock %}
 
 {% block content %}
-<h2>Вход в систему</h2>
-
-<form method="post">
-    {% csrf_token %}
-    
-    {% for field in form %}
-    <div class="field">
-        {{ field.label_tag }}
-        {{ field }}
-        {% if field.errors %}
-        <div class="error">{{ field.errors }}</div>
-        {% endif %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Вход в систему</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <div class="d-grid gap-2">
+                        {% bootstrap_button "Войти" button_type="submit" button_class="btn-primary" %}
+                    </div>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Нет аккаунта? <a href="{% url 'design_app:register' %}">Зарегистрируйтесь</a></p>
+                </div>
+            </div>
+        </div>
     </div>
-    {% endfor %}
-    
-    <button type="submit">Войти</button>
-</form>
-
-<p>Нет аккаунта? <a href="{% url 'design_app:register' %}">Зарегистрируйтесь</a></p>
+</div>
 {% endblock %}

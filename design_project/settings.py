@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'design_app',
+    'django_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -118,7 +119,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -131,5 +131,5 @@ AUTH_USER_MODEL = 'design_app.CustomUser'
 
 LOGIN_URL = 'design_app:login'
 LOGIN_REDIRECT_URL = 'design_app:profile'
-LOGOUT_REDIRECT_URL = 'design_app:home'
+LOGOUT_REDIRECT_URL = 'design_app:index'
 
