@@ -1,9 +1,22 @@
-# design_app/models.py
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 import os
+
+
+def validate_image_size(value):
+    if value.size > 2 * 1024 * 1024:
+        raise ValidationError('Максимальный размер файла 2 МБ')
+
+
+def validate_image_extension(value):
+    valid_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
+    ext = os.path.splitext(value.name)[1].lower()
+    if ext not in valid_extensions:
+        raise ValidationError(
+            f'Неподдерживаемый формат изображения. Допустимые: {", ".join(valid_extensions)}'
+        )
 
 
 class CustomUser(AbstractUser):
@@ -14,13 +27,25 @@ class CustomUser(AbstractUser):
             RegexValidator(
                 regex='^[а-яА-ЯёЁ\s\-]+$',
                 message='ФИО может содержать только кириллические буквы, дефис и пробелы'
-            )
+            ),
         ]
     )
 
     email = models.EmailField(
         unique=True,
         verbose_name='Email'
+    )
+
+    username = models.CharField(
+        max_length=150,
+        unique=True,
+        verbose_name='Логин',
+        validators=[
+            RegexValidator(
+                regex='^[a-zA-Z\-]+$',
+                message='Логин может содержать только латинские буквы и дефис'
+            )
+        ]
     )
 
     class Meta:
@@ -42,22 +67,6 @@ class DesignCategory(models.Model):
         verbose_name_plural = 'Категории дизайна'
 
 
-def validate_image_size(value):
-    """Проверка размера файла (макс. 2MB)"""
-    if value.size > 2 * 1024 * 1024:
-        raise ValidationError('Максимальный размер файла 2 МБ')
-
-
-def validate_image_extension(value):
-    """Проверка формата файла"""
-    valid_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
-    ext = os.path.splitext(value.name)[1].lower()
-    if ext not in valid_extensions:
-        raise ValidationError(
-            f'Неподдерживаемый формат изображения. Допустимые: {", ".join(valid_extensions)}'
-        )
-
-
 class DesignRequest(models.Model):
     STATUS_CHOICES = [
         ('new', 'Новая'),
@@ -75,7 +84,7 @@ class DesignRequest(models.Model):
     description = models.TextField(verbose_name='Описание заявки')
     category = models.ForeignKey(
         DesignCategory,
-        on_delete=models.CASCADE,  # При удалении категории удаляются заявки
+        on_delete=models.CASCADE,
         verbose_name='Категория'
     )
     image = models.ImageField(
@@ -90,7 +99,6 @@ class DesignRequest(models.Model):
         verbose_name='Статус заявки'
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
-
     admin_comment = models.TextField(
         blank=True,
         verbose_name='Комментарий администратора'
@@ -107,7 +115,7 @@ class DesignRequest(models.Model):
         return f"{self.title} - {self.user.username}"
 
     def can_be_deleted(self):
-        return self.status == 'new'  # Только заявки со статусом "Новая"
+        return self.status == 'new'
 
     def clean(self):
         if self.status == 'completed' and not self.design_image:
@@ -122,4 +130,4 @@ class DesignRequest(models.Model):
     class Meta:
         verbose_name = 'Заявка на дизайн'
         verbose_name_plural = 'Заявки на дизайн'
-        ordering = ['-created_at']  # Недавние first - по ТЗ
+        ordering = ['-created_at']
