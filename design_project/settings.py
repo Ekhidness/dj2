@@ -56,7 +56,7 @@ ROOT_URLCONF = 'design_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,4 +128,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 AUTH_USER_MODEL = 'design_app.CustomUser'
+
+LOGIN_URL = 'design_app:login'
+LOGIN_REDIRECT_URL = 'design_app:profile'
+LOGOUT_REDIRECT_URL = 'design_app:home'
 

@@ -25,7 +25,7 @@ class CustomUser(AbstractUser):
         verbose_name='ФИО',
         validators=[
             RegexValidator(
-                regex='^[а-яА-ЯёЁ\s\-]+$',
+                regex=r'^[а-яА-ЯёЁ\s\-]+$',
                 message='ФИО может содержать только кириллические буквы, дефис и пробелы'
             ),
         ]
@@ -42,7 +42,7 @@ class CustomUser(AbstractUser):
         verbose_name='Логин',
         validators=[
             RegexValidator(
-                regex='^[a-zA-Z\-]+$',
+                regex=r'^[a-zA-Z\-]+$',
                 message='Логин может содержать только латинские буквы и дефис'
             )
         ]
