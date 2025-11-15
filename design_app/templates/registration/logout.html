@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 {% load django_bootstrap5 %}
 
+{% block title %}Выход - Design.pro{% endblock %}
+
 {% block content %}
-<h2>Выход из системы</h2>
-<p>Вы успешно вышли из системы.</p>
-<a href="{% url 'design_app:index' %}">На главную</a>
+<section class="text-center">
+    <h2>Выход из системы</h2>
+    <p>Вы успешно вышли из системы.</p>
+    <a href="{% url 'design_app:index' %}" class="btn btn-primary">На главную</a>
+</section>
 {% endblock %}

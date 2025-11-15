@@ -4,40 +4,42 @@
 {% block title %}Design.pro - Главная{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h1 class="text-center mb-4">Design.pro - Студия дизайна интерьеров</h1>
-        
-        <div class="alert alert-info">
-            <h4 class="alert-heading">Заявок в работе: {{ in_progress_count }}</h4>
-        </div>
+<section>
+    <header class="mb-4">
+        <h1 class="text-center">Design.pro - Студия дизайна интерьеров</h1>
+    </header>
 
-        <h2 class="mb-3">Последние выполненные работы</h2>
+    <article class="alert alert-info">
+        <h2 class="alert-heading h4">Заявок в работе: {{ in_progress_count }}</h2>
+    </article>
+
+    <section>
+        <h2>Последние выполненные работы</h2>
         
         {% if completed_requests %}
             <div class="row">
                 {% for request in completed_requests %}
-                <div class="col-md-6 col-lg-3 mb-4">
+                <article class="col-md-6 col-lg-3 mb-4">
                     <div class="card h-100">
                         {% if request.design_image %}
                             <img src="{{ request.design_image.url }}" class="card-img-top" alt="{{ request.title }}" style="height: 200px; object-fit: cover;">
                         {% endif %}
                         <div class="card-body">
-                            <h5 class="card-title">{{ request.title }}</h5>
+                            <h3 class="card-title h5">{{ request.title }}</h3>
                             <p class="card-text">
                                 <small class="text-muted">{{ request.category.name }}</small><br>
                                 <small class="text-muted">{{ request.created_at|date:"d.m.Y" }}</small>
                             </p>
                         </div>
                     </div>
-                </div>
+                </article>
                 {% endfor %}
             </div>
         {% else %}
             <div class="alert alert-warning text-center">
-                <p class="mb-0">Пока нет выполненных работ</p>
+                <p>Пока нет выполненных работ</p>
             </div>
         {% endif %}
-    </div>
-</div>
+    </section>
+</section>
 {% endblock %}

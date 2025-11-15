@@ -7,14 +7,14 @@ from .models import CustomUser, DesignCategory, DesignRequest
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'fio', 'email', 'is_staff')
-    list_filter = ('is_staff', 'is_superuser', 'is_active')
+    list_filter = ('is_staff', 'username')
     search_fields = ('username', 'fio', 'email')
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': ('fio', 'email')}),
         (_('Permissions'), {
-            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+            'fields': ('is_active', 'is_staff', 'groups', 'user_permissions'),
         }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )

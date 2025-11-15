@@ -1,14 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Count
-from .models import DesignRequest, DesignCategory
+from .models import DesignRequest
 from .forms import CustomUserCreationForm, LoginForm, DesignRequestForm
 
 
 def index(request):
-    """Главная страница"""
     completed_requests = DesignRequest.objects.filter(
         status='completed'
     ).order_by('-created_at')[:4]
@@ -25,7 +23,6 @@ def index(request):
 
 
 def register_view(request):
-    """Регистрация пользователя"""
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -39,8 +36,7 @@ def register_view(request):
     return render(request, 'registration/register.html', {'form': form})
 
 
-def login_view(request):  # ← ИСПРАВЬ НАЗВАНИЕ НА login_view
-    """Вход в систему"""
+def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -50,7 +46,6 @@ def login_view(request):  # ← ИСПРАВЬ НАЗВАНИЕ НА login_view
 
             if user is not None:
                 login(request, user)
-                messages.success(request, f'Добро пожаловать, {user.fio}!')
                 return redirect('design_app:profile')
             else:
                 messages.error(request, 'Неверный логин или пароль')
@@ -61,14 +56,40 @@ def login_view(request):  # ← ИСПРАВЬ НАЗВАНИЕ НА login_view
 
 
 def logout_view(request):
-    """Выход из системы"""
     logout(request)
-    messages.success(request, 'Вы успешно вышли из системы')
     return redirect('design_app:index')
 
 
 @login_required
 def profile_view(request):
-    """Личный кабинет пользователя"""
     user_requests = DesignRequest.objects.filter(user=request.user)
     return render(request, 'design_app/profile.html', {'user_requests': user_requests})
+
+
+@login_required
+def create_request_view(request):
+    if request.method == 'POST':
+        form = DesignRequestForm(request.POST, request.FILES)
+        if form.is_valid():
+            design_request = form.save(commit=False)
+            design_request.user = request.user
+            design_request.save()
+            messages.success(request, 'Заявка успешно создана!')
+            return redirect('design_app:profile')
+    else:
+        form = DesignRequestForm()
+
+    return render(request, 'design_app/create_request.html', {'form': form})
+
+
+@login_required
+def delete_request_view(request, request_id):
+    design_request = get_object_or_404(DesignRequest, id=request_id, user=request.user)
+
+    if design_request.can_be_deleted():
+        design_request.delete()
+        messages.success(request, 'Заявка удалена')
+    else:
+        messages.error(request, 'Невозможно удалить заявку')
+
+    return redirect('design_app:profile')

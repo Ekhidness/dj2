@@ -4,12 +4,12 @@
 {% block title %}Регистрация - Design.pro{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
+<section class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title mb-0">Регистрация</h4>
-            </div>
+        <article class="card">
+            <header class="card-header">
+                <h2 class="card-title h4 mb-0">Регистрация</h2>
+            </header>
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
@@ -18,11 +18,11 @@
                         {% bootstrap_button "Зарегистрироваться" button_type="submit" button_class="btn-primary" %}
                     </div>
                 </form>
-                <div class="text-center mt-3">
+                <footer class="text-center mt-3">
                     <p>Уже есть аккаунт? <a href="{% url 'design_app:login' %}">Войдите</a></p>
-                </div>
+                </footer>
             </div>
-        </div>
+        </article>
     </div>
-</div>
+</section>
 {% endblock %}
