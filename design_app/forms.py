@@ -30,23 +30,12 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ('fio', 'username', 'email', 'password1', 'password2')
-        labels = {
-            'username': 'Логин',
-            'password1': 'Пароль',
-            'password2': 'Повтор пароля',
-        }
 
 
 class DesignRequestForm(forms.ModelForm):
     class Meta:
         model = DesignRequest
         fields = ['title', 'description', 'category', 'image']
-        labels = {
-            'title': 'Название заявки',
-            'description': 'Описание заявки',
-            'category': 'Категория',
-            'image': 'Изображение помещения',
-        }
 
 
 class LoginForm(forms.Form):

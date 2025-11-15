@@ -5,20 +5,6 @@ from django.core.exceptions import ValidationError
 import os
 
 
-def validate_image_size(value):
-    if value.size > 2 * 1024 * 1024:
-        raise ValidationError('Максимальный размер файла 2 МБ')
-
-
-def validate_image_extension(value):
-    valid_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
-    ext = os.path.splitext(value.name)[1].lower()
-    if ext not in valid_extensions:
-        raise ValidationError(
-            f'Неподдерживаемый формат изображения. Допустимые: {", ".join(valid_extensions)}'
-        )
-
-
 class CustomUser(AbstractUser):
     fio = models.CharField(
         max_length=255,
@@ -89,8 +75,7 @@ class DesignRequest(models.Model):
     )
     image = models.ImageField(
         upload_to='request_images/',
-        verbose_name='Изображение помещения',
-        validators=[validate_image_size, validate_image_extension]
+        verbose_name='Изображение помещения'
     )
     status = models.CharField(
         max_length=20,
@@ -107,8 +92,7 @@ class DesignRequest(models.Model):
         upload_to='design_images/',
         blank=True,
         null=True,
-        verbose_name='Изображение дизайна',
-        validators=[validate_image_size, validate_image_extension]
+        verbose_name='Изображение дизайна'
     )
 
     def __str__(self):
