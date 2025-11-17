@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 
 
 class CustomUser(AbstractUser):
-    fio = models.CharField(max_length=255, verbose_name='ФИО')
+    fio = models.CharField(verbose_name='ФИО')
     email = models.EmailField(unique=True, verbose_name='Email')
 
     class Meta:
@@ -16,7 +16,7 @@ class CustomUser(AbstractUser):
 
 
 class DesignCategory(models.Model):
-    name = models.CharField(max_length=255, verbose_name='Название категории')
+    name = models.CharField(verbose_name='Название категории')
 
     def __str__(self):
         return self.name
@@ -39,7 +39,7 @@ class DesignRequest(models.Model):
         verbose_name='Пользователь',
         related_name='design_requests'
     )
-    title = models.CharField(max_length=255, verbose_name='Название заявки')
+    title = models.CharField(verbose_name='Название заявки')
     description = models.TextField(verbose_name='Описание заявки')
     category = models.ForeignKey(
         DesignCategory,

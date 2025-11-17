@@ -50,14 +50,10 @@ class CustomUserCreationForm(UserCreationForm):
 class DesignRequestForm(forms.ModelForm):
     def clean_title(self):
         title = self.cleaned_data.get('title')
-        if title and len(title.strip()) < 5:
-            raise ValidationError('Название должно содержать минимум 5 символов')
         return title
 
     def clean_description(self):
         description = self.cleaned_data.get('description')
-        if description and len(description.strip()) < 10:
-            raise ValidationError('Описание должно содержать минимум 10 символов')
         return description
 
     def clean_image(self):
@@ -86,8 +82,6 @@ class LoginForm(forms.Form):
 class DesignCategoryForm(forms.ModelForm):
     def clean_name(self):
         name = self.cleaned_data.get('name')
-        if name and len(name.strip()) < 2:
-            raise ValidationError('Название категории должно содержать минимум 2 символа')
         return name
 
     class Meta:
