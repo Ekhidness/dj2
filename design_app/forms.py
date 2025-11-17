@@ -26,6 +26,12 @@ class CustomUserCreationForm(UserCreationForm):
             raise ValidationError('Логин может содержать только латинские буквы и дефис')
         return username
 
+    def clean_password1(self):
+        password1 = self.cleaned_data.get('password1')
+        if len(password1) < 8:
+            raise ValidationError('Пароль должен содержать минимум 8 символов')
+        return password1
+
     def clean(self):
         cleaned_data = super().clean()
         password1 = cleaned_data.get('password1')
