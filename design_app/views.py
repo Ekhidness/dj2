@@ -1,10 +1,91 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from .models import DesignRequest
-from .forms import CustomUserCreationForm, LoginForm, DesignRequestForm
+from .models import DesignRequest, DesignCategory
+from .forms import CustomUserCreationForm, LoginForm, DesignRequestForm, DesignCategoryForm
 
+
+def is_admin(user):
+    return user.is_staff
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_dashboard(request):
+    new_requests = DesignRequest.objects.filter(status='new')
+    in_progress_requests = DesignRequest.objects.filter(status='accepted')
+    categories = DesignCategory.objects.all()
+
+    context = {
+        'new_requests': new_requests,
+        'in_progress_requests': in_progress_requests,
+        'categories': categories,
+    }
+    return render(request, 'design_app/admin_dashboard.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_requests(request):
+    requests = DesignRequest.objects.all().order_by('-created_at')
+    return render(request, 'design_app/admin_requests.html', {'requests': requests})
+
+
+@login_required
+@user_passes_test(is_admin)
+def change_request_status(request, request_id):
+    design_request = get_object_or_404(DesignRequest, id=request_id)
+
+    if request.method == 'POST':
+        new_status = request.POST.get('status')
+        admin_comment = request.POST.get('admin_comment', '')
+        design_image = request.FILES.get('design_image')
+
+        if new_status in ['accepted', 'completed']:
+            design_request.status = new_status
+            design_request.admin_comment = admin_comment
+
+            if new_status == 'completed' and design_image:
+                design_request.design_image = design_image
+
+            design_request.save()
+            messages.success(request, f'Статус заявки изменен на "{design_request.get_status_display()}"')
+        else:
+            messages.error(request, 'Неверный статус')
+
+        return redirect('design_app:admin_requests')
+
+    return render(request, 'design_app/change_status.html', {'design_request': design_request})
+
+
+@login_required
+@user_passes_test(is_admin)
+def manage_categories(request):
+    if request.method == 'POST':
+        if 'add_category' in request.POST:
+            form = DesignCategoryForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Категория добавлена')
+            else:
+                messages.error(request, 'Ошибка при добавлении категории')
+
+        elif 'delete_category' in request.POST:
+            category_id = request.POST.get('category_id')
+            category = get_object_or_404(DesignCategory, id=category_id)
+            category_name = category.name
+            category.delete()
+            messages.success(request, f'Категория "{category_name}" удалена')
+
+        return redirect('design_app:manage_categories')
+
+    categories = DesignCategory.objects.all()
+    form = DesignCategoryForm()
+    return render(request, 'design_app/manage_categories.html', {
+        'categories': categories,
+        'form': form
+    })
 
 def index(request):
     completed_requests = DesignRequest.objects.filter(

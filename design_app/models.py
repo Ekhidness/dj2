@@ -1,38 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
-import os
 
 
 class CustomUser(AbstractUser):
-    fio = models.CharField(
-        max_length=255,
-        verbose_name='ФИО',
-        validators=[
-            RegexValidator(
-                regex=r'^[а-яА-ЯёЁ\s\-]+$',
-                message='ФИО может содержать только кириллические буквы, дефис и пробелы'
-            ),
-        ]
-    )
-
-    email = models.EmailField(
-        unique=True,
-        verbose_name='Email'
-    )
-
-    username = models.CharField(
-        max_length=150,
-        unique=True,
-        verbose_name='Логин',
-        validators=[
-            RegexValidator(
-                regex=r'^[a-zA-Z\-]+$',
-                message='Логин может содержать только латинские буквы и дефис'
-            )
-        ]
-    )
+    fio = models.CharField(max_length=255, verbose_name='ФИО')
+    email = models.EmailField(unique=True, verbose_name='Email')
 
     class Meta:
         verbose_name = 'Пользователь'

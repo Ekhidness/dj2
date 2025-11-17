@@ -1,10 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
 
-</body>
-</html>
+{% block title %}Управление категориями - Design.pro{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Добавить категорию</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <button type="submit" name="add_category" class="btn btn-primary">Добавить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Существующие категории</h4>
+            </div>
+            <div class="card-body">
+                {% if categories %}
+                    {% for category in categories %}
+                    <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                        <span>{{ category.name }}</span>
+                        <form method="post" class="m-0">
+                            {% csrf_token %}
+                            <input type="hidden" name="category_id" value="{{ category.id }}">
+                            <button type="submit" name="delete_category" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Удалить категорию? Все заявки этой категории будут удалены.')">
+                                Удалить
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">Категорий пока нет</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,10 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Панель управления - Design.pro{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2>Панель управления администратора</h2>
+        
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Новые заявки</h5>
+                        <h2 class="card-text">{{ new_requests.count }}</h2>
+                        <a href="{% url 'design_app:admin_requests' %}" class="btn btn-light">Просмотреть</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">В работе</h5>
+                        <h2 class="card-text">{{ in_progress_requests.count }}</h2>
+                        <a href="{% url 'design_app:admin_requests' %}" class="btn btn-light">Просмотреть</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Категории</h5>
+                        <h2 class="card-text">{{ categories.count }}</h2>
+                        <a href="{% url 'design_app:manage_categories' %}" class="btn btn-light">Управлять</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Быстрые действия</h5>
+                    </div>
+                    <div class="card-body">
+                        <a href="{% url 'design_app:admin_requests' %}" class="btn btn-primary me-2">Управление заявками</a>
+                        <a href="{% url 'design_app:manage_categories' %}" class="btn btn-success">Управление категориями</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
