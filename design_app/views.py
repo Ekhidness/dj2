@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from .models import DesignRequest, DesignCategory
 from .forms import CustomUserCreationForm, LoginForm, DesignRequestForm, DesignCategoryForm
 
@@ -12,45 +13,42 @@ def is_admin(user):
 
 @login_required
 @user_passes_test(is_admin)
-def admin_dashboard(request):
-    new_requests = DesignRequest.objects.filter(status='new')
-    in_progress_requests = DesignRequest.objects.filter(status='accepted')
-    categories = DesignCategory.objects.all()
-
-    context = {
-        'new_requests': new_requests,
-        'in_progress_requests': in_progress_requests,
-        'categories': categories,
-    }
-    return render(request, 'design_app/admin_dashboard.html', context)
-
-
-@login_required
-@user_passes_test(is_admin)
-def admin_requests(request):
-    requests = DesignRequest.objects.all().order_by('-created_at')
-    return render(request, 'design_app/admin_requests.html', {'requests': requests})
-
-
-@login_required
-@user_passes_test(is_admin)
 def change_request_status(request, request_id):
     design_request = get_object_or_404(DesignRequest, id=request_id)
 
     if request.method == 'POST':
         new_status = request.POST.get('status')
-        admin_comment = request.POST.get('admin_comment', '')
+        admin_comment = request.POST.get('admin_comment', '').strip()
         design_image = request.FILES.get('design_image')
 
+        errors = {}
+
         if new_status in ['accepted', 'completed']:
+            if new_status == 'accepted' and not admin_comment:
+                errors['admin_comment'] = 'Для статуса "Принято в работу" обязателен комментарий'
+
+            if new_status == 'completed' and not design_image:
+                errors['design_image'] = 'Для статуса "Выполнено" обязательно изображение дизайна'
+
+            if errors:
+                for field, error in errors.items():
+                    messages.error(request, error)
+                return render(request, 'design_app/change_status.html', {'design_request': design_request})
+
             design_request.status = new_status
             design_request.admin_comment = admin_comment
 
             if new_status == 'completed' and design_image:
                 design_request.design_image = design_image
 
-            design_request.save()
-            messages.success(request, f'Статус заявки изменен на "{design_request.get_status_display()}"')
+            try:
+                design_request.full_clean()
+                design_request.save()
+                messages.success(request, f'Статус заявки изменен на "{design_request.get_status_display()}"')
+            except ValidationError as e:
+                for field, error_list in e.message_dict.items():
+                    for error in error_list:
+                        messages.error(request, f'{field}: {error}')
         else:
             messages.error(request, 'Неверный статус')
 
