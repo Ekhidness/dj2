@@ -7,11 +7,20 @@ import re
 
 
 class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True, label='Email')
-    fio = forms.CharField(max_length=255, label='ФИО')
+    email = forms.EmailField(
+        required=True,
+        label='Email',
+        help_text='Введите действующий email адрес'
+    )
+    fio = forms.CharField(
+        max_length=255,
+        label='ФИО',
+        help_text='Только кириллические буквы, дефис и пробелы'
+    )
     agree_to_terms = forms.BooleanField(
         required=True,
-        label='Согласие на обработку персональных данных'
+        label='Согласие на обработку персональных данных',
+        help_text='Для регистрации необходимо принять соглашение'
     )
 
     def clean_fio(self):
@@ -45,6 +54,13 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ('fio', 'username', 'email', 'password1', 'password2')
+        help_texts = {
+            'fio': 'Только кириллица, дефис и пробелы.',
+            'username': 'Только латиница и дефис. Будет использоваться для входа.',
+            'email': 'Введите действующий email адрес.',
+            'password1': 'Минимум 8 символов.',
+            'password2': 'Введите пароль еще раз для подтверждения.',
+        }
 
 
 class DesignRequestForm(forms.ModelForm):
@@ -72,11 +88,24 @@ class DesignRequestForm(forms.ModelForm):
     class Meta:
         model = DesignRequest
         fields = ['title', 'description', 'category', 'image']
+        help_texts = {
+            'title': 'Краткое описание заявки',
+            'description': 'Подробное описание помещения и ваших пожеланий',
+            'category': 'Выберите подходящую категорию дизайна',
+            'image': 'Форматы: JPG, JPEG, PNG, BMP. Максимальный размер: 2 МБ',
+        }
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(label='Логин')
-    password = forms.CharField(widget=forms.PasswordInput, label='Пароль')
+    username = forms.CharField(
+        label='Логин',
+        help_text='Введите ваш логин'
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput,
+        label='Пароль',
+        help_text='Введите ваш пароль'
+    )
 
 
 class DesignCategoryForm(forms.ModelForm):
@@ -89,4 +118,7 @@ class DesignCategoryForm(forms.ModelForm):
         fields = ['name']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Название категории'})
+        }
+        help_texts = {
+            'name': 'Введите название новой категории',
         }
