@@ -15,4 +15,5 @@ urlpatterns = [
     path('manager/requests/', views.admin_requests, name='admin_requests'),
     path('manager/change-status/<int:request_id>/', views.change_request_status, name='change_status'),
     path('manager/categories/', views.manage_categories, name='manage_categories'),
+    path('manager/delete-request/<int:request_id>/', views.admin_delete_request, name='admin_delete_request'),
 ]

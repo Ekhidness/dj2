@@ -9,30 +9,47 @@
         <h2>Панель управления администратора</h2>
         
         <div class="row mt-4">
-            <div class="col-md-4">
-                <div class="card text-white bg-success">
+            <div class="col-md-3">
+                <div class="card text-white bg-primary">
                     <div class="card-body">
-                        <h5 class="card-title">Новые заявки</h5>
-                        <h2 class="card-text">{{ new_requests.count }}</h2>
-                        <a href="{% url 'design_app:admin_requests' %}" class="btn btn-light">Просмотреть</a>
+                        <h5 class="card-title">Всего заявок</h5>
+                        <h2 class="card-text">{{ total_requests }}</h2>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-success">
+            <div class="col-md-3">
+                <div class="card text-white bg-black">
+                    <div class="card-body">
+                        <h5 class="card-title">Новые</h5>
+                        <h2 class="card-text">{{ new_requests_count }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-info">
                     <div class="card-body">
                         <h5 class="card-title">В работе</h5>
-                        <h2 class="card-text">{{ in_progress_requests.count }}</h2>
-                        <a href="{% url 'design_app:admin_requests' %}" class="btn btn-light">Просмотреть</a>
+                        <h2 class="card-text">{{ accepted_requests_count }}</h2>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card text-white bg-success">
                     <div class="card-body">
+                        <h5 class="card-title">Выполнено</h5>
+                        <h2 class="card-text">{{ completed_requests_count }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
                         <h5 class="card-title">Категории</h5>
-                        <h2 class="card-text">{{ categories.count }}</h2>
-                        <a href="{% url 'design_app:manage_categories' %}" class="btn btn-light">Управлять</a>
+                        <h2 class="card-text">{{ categories_count }}</h2>
+                        <a href="{% url 'design_app:manage_categories' %}" class="btn btn-success">Управление категориями</a>
                     </div>
                 </div>
             </div>
@@ -41,12 +58,9 @@
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Быстрые действия</h5>
-                    </div>
                     <div class="card-body">
                         <a href="{% url 'design_app:admin_requests' %}" class="btn btn-primary me-2">Управление заявками</a>
-                        <a href="{% url 'design_app:manage_categories' %}" class="btn btn-success">Управление категориями</a>
+                        <a href="{% url 'design_app:manage_categories' %}" class="btn btn-success me-2">Управление категориями</a>
                     </div>
                 </div>
             </div>

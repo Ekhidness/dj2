@@ -15,18 +15,19 @@ def is_admin(user):
 @user_passes_test(is_admin)
 def admin_dashboard(request):
     total_requests = DesignRequest.objects.count()
-    new_requests = DesignRequest.objects.filter(status='new').count()
-    accepted_requests = DesignRequest.objects.filter(status='accepted').count()
-    completed_requests = DesignRequest.objects.filter(status='completed').count()
+    new_requests_count = DesignRequest.objects.filter(status='new').count()
+    accepted_requests_count = DesignRequest.objects.filter(status='accepted').count()
+    completed_requests_count = DesignRequest.objects.filter(status='completed').count()
+    categories_count = DesignCategory.objects.count()
 
     context = {
         'total_requests': total_requests,
-        'new_requests': new_requests,
-        'accepted_requests': accepted_requests,
-        'completed_requests': completed_requests,
+        'new_requests_count': new_requests_count,  # Передаем число, а не QuerySet
+        'accepted_requests_count': accepted_requests_count,
+        'completed_requests_count': completed_requests_count,
+        'categories_count': categories_count,
     }
     return render(request, 'design_app/admin_dashboard.html', context)
-
 
 @login_required
 @user_passes_test(is_admin)
@@ -91,6 +92,24 @@ def change_request_status(request, request_id):
     return render(request, 'design_app/change_status.html', {'design_request': design_request})
 
 
+@login_required
+@user_passes_test(is_admin)
+def admin_delete_request(request, request_id):
+
+    design_request = get_object_or_404(DesignRequest, id=request_id)
+
+    if request.method == 'POST':
+        if design_request.status == 'new':
+            design_request.delete()
+            messages.success(request, 'Заявка успешно удалена')
+        else:
+            messages.error(request, 'Можно удалять только заявки со статусом "Новая"')
+
+        return redirect('design_app:admin_requests')
+
+    return render(request, 'design_app/admin_confirm_delete.html', {
+        'design_request': design_request
+    })
 @login_required
 @user_passes_test(is_admin)
 def manage_categories(request):

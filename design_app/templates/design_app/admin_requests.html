@@ -8,21 +8,35 @@
     <div class="col-12">
         <h2>Управление заявками</h2>
         
-        {% if requests %}
-            {% for request in requests %}
+        <!-- Добавьте фильтр по статусу -->
+        <div class="mb-3">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <select name="status" class="form-select" onchange="this.form.submit()">
+                        <option value="">Все заявки</option>
+                        <option value="new" {% if current_filter == 'new' %}selected{% endif %}>Новые</option>
+                        <option value="accepted" {% if current_filter == 'accepted' %}selected{% endif %}>В работе</option>
+                        <option value="completed" {% if current_filter == 'completed' %}selected{% endif %}>Выполненные</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        {% if design_requests %}  <!-- Измените на design_requests -->
+            {% for request in design_requests %}  <!-- И здесь тоже -->
             <div class="card mb-3">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start">
                         <div class="flex-grow-1">
                             <h5 class="card-title">{{ request.title }}</h5>
                             <p class="card-text">
-                                <span class="badge 
+                                <span class="badge
                                     {% if request.status == 'new' %}bg-primary
                                     {% elif request.status == 'accepted' %}bg-warning
                                     {% else %}bg-success{% endif %}">
                                     {{ request.get_status_display }}
                                 </span>
-                                <strong>Пользователь:</strong> {{ request.user.fio }}
+                                <strong>Пользователь:</strong> {{ request.user.username }}
                                 <strong>Категория:</strong> {{ request.category.name }}
                             </p>
                             <p class="card-text"><strong>Описание:</strong> {{ request.description }}</p>
