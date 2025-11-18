@@ -13,6 +13,40 @@ def is_admin(user):
 
 @login_required
 @user_passes_test(is_admin)
+def admin_dashboard(request):
+    total_requests = DesignRequest.objects.count()
+    new_requests = DesignRequest.objects.filter(status='new').count()
+    accepted_requests = DesignRequest.objects.filter(status='accepted').count()
+    completed_requests = DesignRequest.objects.filter(status='completed').count()
+
+    context = {
+        'total_requests': total_requests,
+        'new_requests': new_requests,
+        'accepted_requests': accepted_requests,
+        'completed_requests': completed_requests,
+    }
+    return render(request, 'design_app/admin_dashboard.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_requests(request):
+    status_filter = request.GET.get('status', '')
+
+    if status_filter:
+        design_requests = DesignRequest.objects.filter(status=status_filter).order_by('-created_at')
+    else:
+        design_requests = DesignRequest.objects.all().order_by('-created_at')
+
+    context = {
+        'design_requests': design_requests,
+        'current_filter': status_filter,
+    }
+    return render(request, 'design_app/admin_requests.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
 def change_request_status(request, request_id):
     design_request = get_object_or_404(DesignRequest, id=request_id)
 
@@ -85,6 +119,7 @@ def manage_categories(request):
         'form': form
     })
 
+
 def index(request):
     completed_requests = DesignRequest.objects.filter(
         status='completed'
@@ -108,7 +143,10 @@ def register_view(request):
             user = form.save()
             login(request, user)
             messages.success(request, 'Регистрация прошла успешно!')
-            return redirect('design_app:profile')
+            if user.is_staff:
+                return redirect('design_app:admin_dashboard')
+            else:
+                return redirect('design_app:profile')
     else:
         form = CustomUserCreationForm()
 
@@ -125,7 +163,10 @@ def login_view(request):
 
             if user is not None:
                 login(request, user)
-                return redirect('design_app:profile')
+                if user.is_staff:
+                    return redirect('design_app:admin_dashboard')
+                else:
+                    return redirect('design_app:profile')
             else:
                 messages.error(request, 'Неверный логин или пароль')
     else:
@@ -141,12 +182,18 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
+    if request.user.is_staff:
+        return redirect('design_app:admin_dashboard')
+
     user_requests = DesignRequest.objects.filter(user=request.user)
     return render(request, 'design_app/profile.html', {'user_requests': user_requests})
 
 
 @login_required
 def create_request_view(request):
+    if request.user.is_staff:
+        return redirect('design_app:admin_dashboard')
+
     if request.method == 'POST':
         form = DesignRequestForm(request.POST, request.FILES)
         if form.is_valid():
@@ -163,6 +210,9 @@ def create_request_view(request):
 
 @login_required
 def delete_request_view(request, request_id):
+    if request.user.is_staff:
+        return redirect('design_app:admin_dashboard')
+
     design_request = get_object_or_404(DesignRequest, id=request_id, user=request.user)
 
     if design_request.can_be_deleted():
